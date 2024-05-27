@@ -1,0 +1,22 @@
+name: deploy_development
+on:
+  workflow_dispatch:
+
+jobs:
+  manual_deploy:
+    runs-on: development-stage
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version: v18.17.0
+      - name: Verify Node.js version
+        run: node --version
+      - run: cd /home/node/Platform-CMS-Backend
+      - run: sudo git -C /home/node/Platform-CMS-Backend/ pull origin development
+      - run: cd /home/node/Platform-CMS-Backend && npm install
+      - run: cd /home/node/Platform-CMS-Backend && npm run build
+      - run: export PM2_HOME="/root/.pm2"; pm2 restart imentor-development
+        env:
+          CI: true
